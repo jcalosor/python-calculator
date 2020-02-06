@@ -8,10 +8,11 @@ kivy.require("1.11.1")
 
 
 class Main:
+    loaded = False
 
     def __init__(self):
         self.view_dir = os.path.join(dirname(__file__), 'view')
-        self._loader()
+        self.loaded = self._loader()
 
     def _loader(self) -> bool:
         """
@@ -23,14 +24,13 @@ class Main:
         try:
             # Loop through the specified dir assuming that it contains all the view files.
             for File in os.listdir(self.view_dir):
-                # Preload the files on boot so that it will be available
+                # Preload the files on init so that it will be available
                 # for controllers to call.
                 if File.endswith('kv'):
                     Builder.load_file(f'{self.view_dir}/{File.lower()}')
 
             return True
         except FileNotFoundError:
-            # @todo: Exception handling should be implemented
             return False
 
     def main(self):
@@ -39,7 +39,8 @@ class Main:
 
         :return: None
         """
-        CalculatorApp().run()
+        if self.loaded:
+            CalculatorApp().run()
 
 
 if __name__ == '__main__':
